@@ -19,6 +19,7 @@ import android.widget.AdapterView;
 import android.widget.AlphabetIndexer;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -38,7 +39,8 @@ public class MainActivity extends AppCompatActivity {
     private LinearLayout headerLayout;
     private TextView headerText;
     private int lastItem = -1;
-    private LinearLayout.MarginLayoutParams mParam;
+    private int mDividerHeight;
+    private RelativeLayout.LayoutParams mParam;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,6 +58,7 @@ public class MainActivity extends AppCompatActivity {
         mAdapter = new ContactArrayAdapter(this, R.layout.list_item, mContactList);
         mListView.setAdapter(mAdapter);
         mAdapter.setAlphabetIndexer(mIndexer);
+        mDividerHeight = mListView.getDividerHeight();
         mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
@@ -72,10 +75,10 @@ public class MainActivity extends AppCompatActivity {
 //                Log.d(TAG, "onScroll: " + absListView);
                 int firstSec = mIndexer.getSectionForPosition(firtItem);
                 int nextItem = mIndexer.getPositionForSection(firstSec + 1);
-                mParam = (LinearLayout.MarginLayoutParams)headerLayout.getLayoutParams();
+                mParam = (RelativeLayout.LayoutParams)headerLayout.getLayoutParams();
 //                Log.d(TAG, "onScroll: firstItem:" + firtItem + ",nextItem:" + nextItem);
                 if (firtItem != lastItem) {
-                    Log.d(TAG, "onScroll: marginT:" + mParam.topMargin);
+//                    Log.d(TAG, "onScroll: marginT:" + mParam.topMargin);
                     mParam.topMargin = 0;
                     headerText.setText(mContactList.get(firtItem).getSortKey());
                     headerLayout.setLayoutParams(mParam);
@@ -83,10 +86,10 @@ public class MainActivity extends AppCompatActivity {
                 if (nextItem == firtItem + 1) {
                     View view = absListView.getChildAt(0);
                     if (view != null) {
-                        int bottom = view.getBottom();
+                        int bottom = view.getBottom() + mDividerHeight;
                         int headerHeight = headerLayout.getHeight();
                         Log.d(TAG, "onScroll: height:" + headerHeight + ",bottom:" + bottom + ",topMargin:" + mParam.topMargin);
-                        if (bottom == headerHeight) {
+                        if (bottom < headerHeight) {
                             mParam.topMargin = bottom - headerHeight;
                             headerLayout.setLayoutParams(mParam);
                         } else {

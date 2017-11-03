@@ -57,11 +57,11 @@ public class ContactArrayAdapter extends ArrayAdapter<Contact> {
         int section = mIndexer.getSectionForPosition(position);
         int firstPosition = mIndexer.getPositionForSection(section);
         if (firstPosition == position) {
-            Log.d(TAG, "getView: text:" + mList.get(position).getSortKey());
+//            Log.d(TAG, "getView: text:" + mList.get(position).getSortKey());
             sortLayout.setVisibility(View.VISIBLE);
             sortText.setText(mList.get(position).getSortKey());
         } else {
-            Log.d(TAG, "getView: ");
+//            Log.d(TAG, "getView: ");
             sortLayout.setVisibility(View.GONE);
         }
 
