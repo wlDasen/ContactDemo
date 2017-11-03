@@ -5,6 +5,8 @@ import android.app.ActivityManager;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Handler;
+import android.os.Message;
 import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
@@ -12,11 +14,13 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.AlphabetIndexer;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
@@ -25,10 +29,12 @@ import android.widget.Toast;
 
 import net.sunniwell.contactsdemo.db.Contact;
 
+import org.w3c.dom.Text;
+
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements View.OnTouchListener {
     private static final String TAG = "jpd-MActivity";
     private static final int REQUEST_READ_CONTACTS = 1;
     private List<Contact> mContactList;
@@ -41,7 +47,12 @@ public class MainActivity extends AppCompatActivity {
     private int lastItem = -1;
     private int mDividerHeight;
     private RelativeLayout.LayoutParams mParam;
-
+    private Button mAlphabetButton;
+    private int mAlphabetHeight;
+    private RelativeLayout mCenterLayout;
+    private TextView mCenterText;
+    private Handler mHandler;
+    
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -101,6 +112,44 @@ public class MainActivity extends AppCompatActivity {
                 lastItem = firtItem;
             }
         });
+        mAlphabetButton = (Button)findViewById(R.id.alphabet_button);
+        mAlphabetButton.setOnTouchListener(this);;
+        mCenterLayout = (RelativeLayout)findViewById(R.id.center_layout);
+        mCenterText = (TextView)findViewById(R.id.center_text);
+        mHandler = new Handler(){
+            @Override
+            public void handleMessage(Message msg) {
+                Log.d(TAG, "handleMessage: .....");
+                if (msg.what == 0) {
+                    Log.d(TAG, "handleMessage: enter what");
+                    mCenterLayout.setVisibility(View.GONE);
+                }
+            }
+        };
+    }
+
+    @Override
+    public boolean onTouch(View view, MotionEvent motionEvent) {
+        mAlphabetHeight = mAlphabetButton.getHeight();
+        int position = (int)((motionEvent.getY() / mAlphabetHeight ) * alphabet.length());
+        int section = mIndexer.getPositionForSection(position);
+        switch (motionEvent.getAction()) {
+            case MotionEvent.ACTION_DOWN:
+                mAlphabetButton.setBackgroundResource(R.drawable.a_z_click);
+                mCenterLayout.setVisibility(View.VISIBLE);
+                mCenterText.setText(String.valueOf(alphabet.charAt(position)));
+                mListView.setSelection(section);
+                break;
+            case MotionEvent.ACTION_MOVE:
+                mCenterText.setText(String.valueOf(alphabet.charAt(position)));
+                mListView.setSelection(section);
+                break;
+            case  MotionEvent.ACTION_UP:
+                mAlphabetButton.setBackgroundResource(R.drawable.a_z_click);
+                mHandler.sendEmptyMessageDelayed(0, 2000);
+                break;
+        }
+        return true;
     }
 
     private void getContactData() {

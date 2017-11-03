@@ -27,4 +27,27 @@
             android:layout_height="wrap_content"
             android:textColor="#ff00ff" />
     </LinearLayout>
+
+    <Button
+        android:id="@+id/alphabet_button"
+        android:layout_width="17dp"
+        android:layout_height="match_parent"
+        android:layout_alignParentRight="true"
+        android:background="@drawable/a_z"
+        android:layout_marginRight="5dp" />
+    <RelativeLayout
+        android:id="@+id/center_layout"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        android:background="@drawable/section_toast"
+        android:visibility="gone"
+        android:layout_centerInParent="true">
+        <TextView
+            android:id="@+id/center_text"
+            android:layout_centerInParent="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="40sp"
+            android:textColor="#ffffff"/>
+    </RelativeLayout>
 </RelativeLayout>
