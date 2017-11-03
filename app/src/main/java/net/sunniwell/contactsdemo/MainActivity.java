@@ -123,6 +123,7 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
                 if (msg.what == 0) {
                     Log.d(TAG, "handleMessage: enter what");
                     mCenterLayout.setVisibility(View.GONE);
+                    mAlphabetButton.setBackgroundResource(R.drawable.a_z);
                 }
             }
         };
