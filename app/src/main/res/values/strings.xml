@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">ContactsDemo</string>
+    <string name="refresh_status_normal">下拉可以刷新</string>
+    <string name="refresh_status_refresh">释放立即刷新</string>
+    <string name="refreshi_status_refreshing">正在刷新...</string>
+    <string name="refresh_update_first_time">从未刷新过</string>
 </resources>
