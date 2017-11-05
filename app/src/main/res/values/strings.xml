@@ -4,4 +4,8 @@
     <string name="refresh_status_refresh">释放立即刷新</string>
     <string name="refreshi_status_refreshing">正在刷新...</string>
     <string name="refresh_update_first_time">从未刷新过</string>
+    <string name="update_first_time">暂未更新过</string>
+    <string name="update_at">上次更新于%1$s前</string>
+    <string name="update_just_now">刚刚更新过</string>
+    <string name="update_tiem_error">时间有问题</string>
 </resources>

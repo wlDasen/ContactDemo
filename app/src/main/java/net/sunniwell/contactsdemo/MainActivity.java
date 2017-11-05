@@ -39,7 +39,7 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
     private static final String TAG = "jpd-MActivity";
     private static final int REQUEST_READ_CONTACTS = 1;
     private List<Contact> mContactList;
-    private static String alphabet = "#ABCEDFGHIGKLMNOPQRSTUVWXYZ";
+    private static String alphabet = "#ABCDEFGHIGKLMNOPQRSTUVWXYZ";
     private AlphabetIndexer mIndexer;
     private ListView mListView;
     private ContactArrayAdapter mAdapter;
@@ -90,9 +90,10 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
                 int firstSec = mIndexer.getSectionForPosition(firtItem);
                 int nextItem = mIndexer.getPositionForSection(firstSec + 1);
                 mParam = (RelativeLayout.LayoutParams)headerLayout.getLayoutParams();
-//                Log.d(TAG, "onScroll: firstItem:" + firtItem + ",nextItem:" + nextItem);
+                Log.d(TAG, "onScroll: firstSec:" + firstSec + ",firstItem:" + firtItem);
+                Log.d(TAG, "onScroll: firstItem:" + firtItem + ",nextItem:" + nextItem);
                 if (firtItem != lastItem) {
-//                    Log.d(TAG, "onScroll: marginT:" + mParam.topMargin);
+                    Log.d(TAG, "onScroll: marginT:" + mParam.topMargin);
                     mParam.topMargin = 0;
                     headerText.setText(mContactList.get(firtItem).getSortKey());
                     headerLayout.setLayoutParams(mParam);

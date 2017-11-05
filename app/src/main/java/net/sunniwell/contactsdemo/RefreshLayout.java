@@ -3,8 +3,10 @@ package net.sunniwell.contactsdemo;
 import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Handler;
+import android.preference.PreferenceManager;
 import android.speech.tts.Voice;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
@@ -54,6 +56,14 @@ public class RefreshLayout extends LinearLayout implements View.OnTouchListener 
     private boolean firstLoad = true;
     private Handler handler;
     private Runnable task;
+    private SharedPreferences mPrefs;
+    private long lastUpdateTime;
+    private static final String UPDATE_TIME = "update_at";
+    private static long ONE_MINUTE = 60 * 1000;
+    private static long ONE_HOUR = 60 * ONE_MINUTE;
+    private static long ONE_DAY = 24 * ONE_HOUR;
+    private static long ONE_MONTH = 30 * ONE_DAY;
+    private static long ONE_YEAR = 12 * ONE_MONTH;
 
     public RefreshLayout(Context context) {
         this(context, null);
@@ -69,6 +79,7 @@ public class RefreshLayout extends LinearLayout implements View.OnTouchListener 
         super(context, attrs, defStyleAttr);
         Log.d(TAG, "RefreshLayout: ");
 
+        mPrefs = PreferenceManager.getDefaultSharedPreferences(context);
         mContext = context;
         initViews();
 
@@ -140,16 +151,59 @@ public class RefreshLayout extends LinearLayout implements View.OnTouchListener 
                 rotateArrow();
             }
             if (currentStatus == STATUS_PULL_REFRESH) {
+                mStatusText.setText(R.string.refresh_status_normal);
                 mProgressBar.setVisibility(GONE);
                 mArrow.setVisibility(VISIBLE);
+                rotateArrow();
             }
+            setUpdateTime();
         }
+    }
+
+    private void setUpdateTime() {
+        lastUpdateTime = mPrefs.getLong(UPDATE_TIME, -1);
+        long current = System.currentTimeMillis();
+        long passedTime = current - lastUpdateTime;
+        String updateText;
+        if (lastUpdateTime == -1) {
+            updateText = getResources().getString(R.string.update_first_time);
+        } else if (passedTime < 0) {
+            updateText = getResources().getString(R.string.update_tiem_error);
+        } else if (passedTime < ONE_MINUTE) {
+            updateText = getResources().getString(R.string.update_just_now);
+        } else if (passedTime < ONE_HOUR) {
+            String value = String.valueOf(passedTime / ONE_MINUTE) + "分钟";
+            updateText = String.format(getResources().getString(R.string.update_at), value);
+        } else if (passedTime < ONE_DAY) {
+            String value = String.valueOf(passedTime / ONE_HOUR) + "小时";
+            updateText = String.format(getResources().getString(R.string.update_at), value);
+        } else if (passedTime < ONE_MONTH) {
+            String value = String.valueOf(passedTime / ONE_DAY) + "天";
+            updateText = String.format(getResources().getString(R.string.update_at), value);
+        } else if (passedTime < ONE_YEAR) {
+            String value = String.valueOf(passedTime / ONE_MONTH) + "月";
+            updateText = String.format(getResources().getString(R.string.update_at), value);
+        } else {
+            String value = String.valueOf(passedTime / ONE_YEAR) + "年";
+            updateText = String.format(getResources().getString(R.string.update_at), value);
+        }
+        mUpdateText.setText(updateText);
     }
 
     private void rotateArrow() {
         float pivotX = mArrow.getWidth() / 2;
         float pivotY = mArrow.getHeight() / 2;
-        RotateAnimation animation = new RotateAnimation(0f, 180f, pivotX, pivotY);
+        float fromRotation = 0.0f;
+        float toRotation = 0.0f;
+        if (currentStatus == STATUS_PULL_REFRESH) {
+            fromRotation = 180.0f;
+            toRotation = 360.0f;
+        }
+        if (currentStatus == STATUS_RELEASE_PULL_REFRESH) {
+            fromRotation = 0.0f;
+            toRotation = 180.0f;
+        }
+        RotateAnimation animation = new RotateAnimation(fromRotation, toRotation, pivotX, pivotY);
         animation.setDuration(200);
         animation.setFillAfter(true);
         mArrow.startAnimation(animation);
@@ -240,6 +294,8 @@ public class RefreshLayout extends LinearLayout implements View.OnTouchListener 
     private void finishRefresh() {
         currentStatus = STATUS_PULL_REFRESH_FINISH;
         new PullTask().execute();
+        long currentTime = System.currentTimeMillis();
+        mPrefs.edit().putLong(UPDATE_TIME, currentTime).apply();
     }
 
     public class PullTask extends AsyncTask<Void, Integer, Integer> {
@@ -253,7 +309,6 @@ public class RefreshLayout extends LinearLayout implements View.OnTouchListener 
                 }
                 publishProgress(mParams.topMargin);
             }
-            currentStatus = STATUS_PULL_REFRESH_FINISH;
             return mRefreshLayoutHeight;
         }
 
