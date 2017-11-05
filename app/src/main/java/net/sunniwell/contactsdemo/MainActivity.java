@@ -31,6 +31,7 @@ import net.sunniwell.contactsdemo.db.Contact;
 
 import org.w3c.dom.Text;
 
+import java.sql.Ref;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -52,6 +53,7 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
     private RelativeLayout mCenterLayout;
     private TextView mCenterText;
     private Handler mHandler;
+    private RefreshLayout mRefreshLayout;
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,6 +72,7 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
         mListView.setAdapter(mAdapter);
         mAdapter.setAlphabetIndexer(mIndexer);
         mDividerHeight = mListView.getDividerHeight();
+        mRefreshLayout = (RefreshLayout)findViewById(R.id.refresh_layout);
         mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
